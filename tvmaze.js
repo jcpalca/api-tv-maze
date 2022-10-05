@@ -118,11 +118,11 @@ function populateEpisodes(episodes) {
 
 /** Handles click on episodes button and displays episodes */
 
-async function getEpisodesAndDisplay(e) {
-  const showId = $(e.target).closest(".Show").data("show-id");
+async function getEpisodesAndDisplay(evt) {
+  const showId = $(evt.target).closest(".Show").data("show-id");
   const episodes = await getEpisodesOfShow(showId);
   populateEpisodes(episodes);
-  console.log("Works");
+  console.log("Episode button works");
 }
 
 $showsList.on("click", ".Show-getEpisodes", getEpisodesAndDisplay);
