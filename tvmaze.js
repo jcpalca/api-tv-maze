@@ -27,7 +27,7 @@ async function getShowsByTerm(term) {
       name: show.name,
       summary: show.summary,
       image: show.image ? show.image.medium : MISSING_TV_IMAGE,
-    }
+    };
   });
 }
 
@@ -56,7 +56,8 @@ function populateShows(shows) {
        </div>
       `);
 
-    $showsList.append($show);  }
+    $showsList.append($show);
+  }
 }
 
 
@@ -86,14 +87,14 @@ async function getEpisodesOfShow(id) {
   const response = await axios.get(
     `${TVMAZE_API_URL}/shows/${id}/episodes`
   );
-  console.log(response.data)
+  console.log(response.data);
   return response.data.map(episode => {
     return {
       id: episode.id,
       name: episode.name,
       season: episode.season,
       number: episode.number,
-    }
+    };
   });
 }
 
@@ -106,23 +107,22 @@ function populateEpisodes(episodes) {
     const $episode = $(
         `<li>${episode.name}
               (Season: ${episode.season},
-                Number: ${episode.number})
+                Episode: ${episode.number})
         </li>`);
 
     $episodesList.append($episode);
   }
-};
 
-
-async function getEpisodesAndDisplay() {
-  const term = $("#searchForm-term").val();
-  const shows = await getShowsByTerm(term);
-
-  $episodesArea.hide();
-  populateShows(shows);
+  $episodesArea.show();
 }
 
-$searchForm.on("submit", async function (evt) {
-  evt.preventDefault();
-  await searchForShowAndDisplay();
-});
+/** Handles click on episodes button and displays episodes */
+
+async function getEpisodesAndDisplay(e) {
+  const showId = $(e.target).closest(".Show").data("show-id");
+  const episodes = await getEpisodesOfShow(showId);
+  populateEpisodes(episodes);
+  console.log("Works");
+}
+
+$showsList.on("click", ".Show-getEpisodes", getEpisodesAndDisplay);
