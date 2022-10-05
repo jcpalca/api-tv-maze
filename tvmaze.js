@@ -1,9 +1,10 @@
 "use strict";
 
-const TVMAZE_API_URL = 'http://api.tvmaze.com/';
+const TVMAZE_API_URL = 'http://api.tvmaze.com';
 const MISSING_TV_IMAGE = 'https://tinyurl.com/tv-missing';
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
+const $episodesList = $("#episodesList");
 const $searchForm = $("#searchForm");
 
 
@@ -86,8 +87,42 @@ async function getEpisodesOfShow(id) {
     `${TVMAZE_API_URL}/shows/${id}/episodes`
   );
   console.log(response.data)
+  return response.data.map(episode => {
+    return {
+      id: episode.id,
+      name: episode.name,
+      season: episode.season,
+      number: episode.number,
+    }
+  });
 }
 
-/** Write a clear docstring for this function... */
+/** Given list of episodes, create markup for each and to DOM */
 
-// function populateEpisodes(episodes) { }
+function populateEpisodes(episodes) {
+  $episodesList.empty();
+
+  for (let episode of episodes) {
+    const $episode = $(
+        `<li>${episode.name}
+              (Season: ${episode.season},
+                Number: ${episode.number})
+        </li>`);
+
+    $episodesList.append($episode);
+  }
+};
+
+
+async function getEpisodesAndDisplay() {
+  const term = $("#searchForm-term").val();
+  const shows = await getShowsByTerm(term);
+
+  $episodesArea.hide();
+  populateShows(shows);
+}
+
+$searchForm.on("submit", async function (evt) {
+  evt.preventDefault();
+  await searchForShowAndDisplay();
+});
